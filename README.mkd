@@ -5,6 +5,8 @@
 
 ## サンプルコード
 
+### IPv4からの構築
+
 ```java
 import net.kaoriya.qb.ipv4_binsearch.IPv4Table;
 
@@ -30,4 +32,15 @@ public class Sample {
     t.find(IPv4.fromString("127.0.0.1"));     // null が返る
   }
 }
+```
+
+### CIDR形式からの構築
+
+```java
+import net.kaoriya.qb.ipv4_binsearch.CIDR;
+
+// ...中略...
+
+IPv4Table<String> t = new IPv4Table();
+t.add(CIDR.fromString("192.168.0.8/24"), "foo");
 ```

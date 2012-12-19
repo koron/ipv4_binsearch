@@ -89,4 +89,24 @@ public class IPv4TableTest
         assertNull(t.find(IPv4.fromString("127.0.0.1")));
     }
 
+    @Test
+    public void findByCIDR1()
+    {
+        IPv4Table<String> t = new IPv4Table();
+        t.add(CIDR.fromString("192.168.0.0/16"), "foo");
+        //t.add(new CIDR(IPv4.fromString("192.168.0.0"), 16), "foo");
+
+        assertEquals("foo", t.find(IPv4.fromString("192.168.0.0")));
+        assertEquals("foo", t.find(IPv4.fromString("192.168.0.1")));
+        assertEquals("foo", t.find(IPv4.fromString("192.168.0.2")));
+        assertEquals("foo", t.find(IPv4.fromString("192.168.1.0")));
+        assertEquals("foo", t.find(IPv4.fromString("192.168.2.0")));
+        assertEquals("foo", t.find(IPv4.fromString("192.168.255.255")));
+
+        assertNull(t.find(IPv4.fromString("0.0.0.0")));
+        assertNull(t.find(IPv4.fromString("255.255.255.255")));
+        assertNull(t.find(IPv4.fromString("192.167.255.255")));
+        assertNull(t.find(IPv4.fromString("192.169.0.0")));
+    }
+
 }

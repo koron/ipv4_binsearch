@@ -18,6 +18,11 @@ public final class IPv4Table<T>
                 IPv4Integer.valueOf(end), data);
     }
 
+    public void add(IPv4Mask mask, T data) {
+        this.rangeTable.add(IPv4Integer.valueOf(mask.getStart()),
+                IPv4Integer.valueOf(mask.getEnd()), data);
+    }
+
     public void clear() {
         this.rangeTable.clear();
     }
