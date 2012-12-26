@@ -55,4 +55,33 @@ public class CIDRTest
         Assert.assertEquals(new CIDR(new IPv4(0, 0, 0, 0), 32),
                 CIDR.fromString("0.0.0.0/32"));
     }
+
+    @Test
+    public void fromStringOK_SubnetMask()
+    {
+        Assert.assertEquals(CIDR.fromString("0.0.0.0/0"),
+                CIDR.fromString("0.0.0.0/0.0.0.0"));
+        Assert.assertEquals(CIDR.fromString("0.0.0.0/1"),
+                CIDR.fromString("0.0.0.0/128.0.0.0"));
+        Assert.assertEquals(CIDR.fromString("0.0.0.0/2"),
+                CIDR.fromString("0.0.0.0/192.0.0.0"));
+        Assert.assertEquals(CIDR.fromString("0.0.0.0/3"),
+                CIDR.fromString("0.0.0.0/224.0.0.0"));
+        Assert.assertEquals(CIDR.fromString("0.0.0.0/4"),
+                CIDR.fromString("0.0.0.0/240.0.0.0"));
+        Assert.assertEquals(CIDR.fromString("0.0.0.0/5"),
+                CIDR.fromString("0.0.0.0/248.0.0.0"));
+        Assert.assertEquals(CIDR.fromString("0.0.0.0/6"),
+                CIDR.fromString("0.0.0.0/252.0.0.0"));
+        Assert.assertEquals(CIDR.fromString("0.0.0.0/7"),
+                CIDR.fromString("0.0.0.0/254.0.0.0"));
+        Assert.assertEquals(CIDR.fromString("0.0.0.0/8"),
+                CIDR.fromString("0.0.0.0/255.0.0.0"));
+
+        Assert.assertEquals(CIDR.fromString("0.0.0.0/31"),
+                CIDR.fromString("0.0.0.0/255.255.255.254"));
+        Assert.assertEquals(CIDR.fromString("0.0.0.0/32"),
+                CIDR.fromString("0.0.0.0/255.255.255.255"));
+    }
+
 }

@@ -78,6 +78,11 @@ public final class CIDR implements IPv4Mask
             return null;
         }
 
+        IPv4 ipMask = IPv4.fromString(values[1]);
+        if (ipMask != null) {
+            return fromSubnetMask(address, ipMask);
+        }
+
         int mask = -1;
         try {
             mask = Integer.parseInt(values[1]);
@@ -89,6 +94,20 @@ public final class CIDR implements IPv4Mask
         }
 
         return new CIDR(address, mask);
+    }
+
+    public static CIDR fromSubnetMask(IPv4 address, IPv4 mask) {
+        if (address == null || mask == null) {
+            return null;
+        }
+
+        int maskValue = 0;
+        for (int value = mask.intValue(); (value & 0x80000000) != 0;
+                value <<= 1) {
+            ++maskValue;
+        }
+
+        return new CIDR(address, maskValue);
     }
 
     public String toBitsString() {

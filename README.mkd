@@ -34,7 +34,7 @@ public class Sample {
 }
 ```
 
-### CIDR形式からの構築
+### CIDR/サブネット形式からの構築
 
 ```java
 import net.kaoriya.qb.ipv4_binsearch.CIDR;
@@ -42,5 +42,8 @@ import net.kaoriya.qb.ipv4_binsearch.CIDR;
 // ...中略...
 
 IPv4Table<String> t = new IPv4Table();
+// CIDR形式
 t.add(CIDR.fromString("192.168.0.8/24"), "foo");
+// サブネット形式
+t.add(CIDR.fromString("192.168.1.0/255.255.255.0"), "foo");
 ```
