@@ -3,7 +3,7 @@ package net.kaoriya.qb.ipv4_binsearch;
 public final class IPv4Table<T>
 {
 
-    private final IntRangeTable<T> rangeTable = new IntRangeTable();
+    private final IntRangeTable<T> rangeTable = new IntRangeTable<>();
 
     public IPv4Table() {
     }
