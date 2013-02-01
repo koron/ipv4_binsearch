@@ -9,7 +9,7 @@ public class IPv4TableTest
     @Test
     public void docSample1()
     {
-        IPv4Table<String> t = new IPv4Table<>();
+        IPv4Table<String> t = new IPv4Table<String>();
         t.add(IPv4.fromString("192.168.0.8"),
                 IPv4.fromString("192.168.0.15"), "foo");
         t.add(IPv4.fromString("192.168.1.100"),
@@ -30,7 +30,7 @@ public class IPv4TableTest
     @Test
     public void findByInt1()
     {
-        IPv4Table<String> t = new IPv4Table<>();
+        IPv4Table<String> t = new IPv4Table<String>();
         t.add(  0,  99, "foo");
         t.add(100, 199, "bar");
 
@@ -48,7 +48,7 @@ public class IPv4TableTest
     @Test
     public void findByInt2()
     {
-        IPv4Table<String> t = new IPv4Table<>();
+        IPv4Table<String> t = new IPv4Table<String>();
         t.add(  0,  99, "foo");
         t.add(101, 199, "bar");
 
@@ -65,7 +65,7 @@ public class IPv4TableTest
     @Test
     public void findByIP1()
     {
-        IPv4Table<String> t = new IPv4Table<>();
+        IPv4Table<String> t = new IPv4Table<String>();
         t.add(IPv4.fromString("192.168.0.8"),
                 IPv4.fromString("192.168.0.15"), "foo");
 
@@ -92,7 +92,7 @@ public class IPv4TableTest
     @Test
     public void findByCIDR1()
     {
-        IPv4Table<String> t = new IPv4Table<>();
+        IPv4Table<String> t = new IPv4Table<String>();
         t.add(CIDR.fromString("192.168.0.0/16"), "foo");
         //t.add(new CIDR(IPv4.fromString("192.168.0.0"), 16), "foo");
 

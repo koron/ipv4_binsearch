@@ -5,7 +5,8 @@ import java.util.ArrayList;
 public final class IntRangeTable<T>
 {
 
-    private final ArrayList<IntRangeData<T>> arrayList = new ArrayList<>();
+    private final ArrayList<IntRangeData<T>> arrayList =
+        new ArrayList<IntRangeData<T>>();
 
     public IntRangeTable() {
     }
