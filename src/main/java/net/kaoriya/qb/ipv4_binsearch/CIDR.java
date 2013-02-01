@@ -46,7 +46,7 @@ public final class CIDR implements IPv4Mask
         if ((this.address == null && that.address != null) ||
                 (this.address != null && !this.address.equals(that.address))) {
             return false;
-        } else if (this.mask != this.mask) {
+        } else if (this.mask != that.mask) {
             return false;
         } else {
             return true;

@@ -2,6 +2,8 @@ package net.kaoriya.qb.ipv4_binsearch;
 
 import org.junit.Assert;
 import org.junit.Test;
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
 
 public class CIDRTest
 {
@@ -84,4 +86,14 @@ public class CIDRTest
                 CIDR.fromString("0.0.0.0/255.255.255.255"));
     }
 
+    @Test
+    public void notMatch()
+    {
+        assertThat(CIDR.fromString("1.2.3.4/0"),
+                is(not(CIDR.fromString("1.2.3.4/1"))));
+        assertThat(CIDR.fromString("1.2.3.4/10"),
+                is(not(CIDR.fromString("1.2.3.4/11"))));
+        assertThat(CIDR.fromString("1.1.1.1/31"),
+                is(not(CIDR.fromString("1.1.1.0/31"))));
+    }
 }
