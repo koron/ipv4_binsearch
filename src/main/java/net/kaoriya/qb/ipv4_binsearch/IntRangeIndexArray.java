@@ -2,7 +2,6 @@ package net.kaoriya.qb.ipv4_binsearch;
 
 import java.lang.reflect.Array;
 
-// TODO: write test
 public final class IntRangeIndexArray
 {
     final int length;

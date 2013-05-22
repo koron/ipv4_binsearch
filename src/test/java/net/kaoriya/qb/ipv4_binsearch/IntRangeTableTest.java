@@ -9,11 +9,11 @@ public class IntRangeTableTest
     @Test
     public void findEmpty() {
         IntRangeTable<Integer> table = new IntRangeTable<Integer>();
-        assertNull(null, table.find(50));
-        assertNull(null, table.find(150));
-        assertNull(null, table.find(250));
-        assertNull(null, table.find(350));
-        assertNull(null, table.find(450));
+        assertNull(table.find(50));
+        assertNull(table.find(150));
+        assertNull(table.find(250));
+        assertNull(table.find(350));
+        assertNull(table.find(450));
     }
 
     @Test
