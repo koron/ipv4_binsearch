@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public final class IntRangeTable<T>
 {
 
-    private final ArrayList<IntRangeData<T>> arrayList =
+    final ArrayList<IntRangeData<T>> arrayList =
         new ArrayList<IntRangeData<T>>();
 
     public IntRangeTable() {
@@ -93,4 +93,7 @@ public final class IntRangeTable<T>
         return -1;
     }
 
+    public T getData(int index) {
+        return this.arrayList.get(index).getData();
+    }
 }
