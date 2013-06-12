@@ -3,6 +3,14 @@
 重複のない複数のIPv4アドレスの範囲(startとendのアドレスで示される)から、
 指定されたIPv4アドレスが含まれるモノを検索するモジュールです。
 
+## ビルド方法
+
+    $ gradle build
+
+出力: `build/libs/ipv4_binsearch-X.X.jar`
+
+pom.xml is obsoleted.
+
 ## サンプルコード
 
 ### IPv4からの構築
