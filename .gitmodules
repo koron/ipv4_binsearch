@@ -1,0 +1,3 @@
+[submodule "SerializedArray"]
+	path = SerializedArray
+	url = git://github.com/koron/SerializedArray.git
