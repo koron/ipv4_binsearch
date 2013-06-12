@@ -5,6 +5,13 @@ package net.kaoriya.qb.ipv4_binsearch;
  */
 public final class IPv4Table2<T> extends IPv4TableBase<T>
 {
+    private final IntRangeIndexArray indexArray;
+
+    public IPv4Table2(IPv4Table<T> src) {
+        this.indexArray = new IntRangeIndexArray(src.rangeTable);
+        // TODO:
+    }
+
     public void add(int start, int end, T data) {
         throw new UnsupportedOperationException();
     }
@@ -14,6 +21,12 @@ public final class IPv4Table2<T> extends IPv4TableBase<T>
     }
 
     public T find(int value) {
-        throw new UnsupportedOperationException();
+        int index = this.indexArray.findIndex(value);
+        return index >= 0 ? get(index) : null;
+    }
+
+    private T get(int index) {
+        // TODO:
+        return null;
     }
 }
