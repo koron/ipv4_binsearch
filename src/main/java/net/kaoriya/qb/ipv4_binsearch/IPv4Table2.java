@@ -40,9 +40,18 @@ public final class IPv4Table2<T> extends IPv4TableBase<T>
         throw new UnsupportedOperationException();
     }
 
-    public T find(int value) {
+    private T findRaw(int value) {
         int index = this.indexArray.findIndex(value);
         return index >= 0 ? get(index) : null;
+    }
+
+    @Override
+    public T find(IPv4 value) {
+        return findRaw(IPv4Integer.valueOf(value));
+    }
+
+    public T find(int value) {
+        return findRaw(IPv4Integer.valueOf(value));
     }
 
     private T get(int index) {
