@@ -47,4 +47,22 @@ public class IntRangeIndexArrayTest
         assertEquals(2, array3.findIndex(550));
     }
 
+    @Test
+    public void twoRanges() {
+        IntRangeTable<Integer> table1 = new IntRangeTable<Integer>();
+        table1.add(0, 99, 1111);
+        table1.add(100, 199, 2222);
+        IntRangeIndexArray array1 = new IntRangeIndexArray(table1);
+
+        assertEquals(0, array1.findIndex(0));
+        assertEquals(0, array1.findIndex(50));
+        assertEquals(0, array1.findIndex(99));
+        assertEquals(1, array1.findIndex(100));
+        assertEquals(1, array1.findIndex(101));
+        assertEquals(1, array1.findIndex(150));
+        assertEquals(1, array1.findIndex(199));
+        assertEquals(-1, array1.findIndex(200));
+        assertEquals(-1, array1.findIndex(201));
+    }
+
 }
