@@ -13,3 +13,8 @@ dependencies {
     compile project(':SerializedArray')
     testCompile group: 'junit', name: 'junit', version: '4.10+'
 }
+
+task benchmark(type: JavaExec, dependsOn: [classes]) {
+    main = 'net.kaoriya.qb.ipv4_binsearch.Benchmark1'
+    classpath = sourceSets.main.runtimeClasspath
+}
