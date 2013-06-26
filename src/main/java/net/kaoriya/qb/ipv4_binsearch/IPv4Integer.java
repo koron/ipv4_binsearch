@@ -12,4 +12,7 @@ public final class IPv4Integer
         return v - 0x80000000;
     }
 
+    public static int valueOf(long v) {
+        return (int)(v - 0x80000000L);
+    }
 }

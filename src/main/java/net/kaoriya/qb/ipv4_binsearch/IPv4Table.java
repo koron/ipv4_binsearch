@@ -24,6 +24,11 @@ public final class IPv4Table<T> extends IPv4TableBase<T>
                 IPv4Integer.valueOf(end), data);
     }
 
+    public void add(long start, long end, T data) {
+        this.rangeTable.add(IPv4Integer.valueOf(start),
+                IPv4Integer.valueOf(end), data);
+    }
+
     public void clear() {
         this.rangeTable.clear();
     }
