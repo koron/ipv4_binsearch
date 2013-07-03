@@ -70,10 +70,6 @@ public class Benchmark1
         return s.toString();
     }
 
-    public static IPv4Table<Value> newTable(long seed, int count, int size) {
-        return newTable1(seed, count, size);
-    }
-
     public static IPv4Table<Value> newTable1(long seed, int count, int size) {
         Random r = new Random(seed);
         IPv4Table<Value> t = new IPv4Table<Value>();
@@ -99,7 +95,7 @@ public class Benchmark1
         ArrayList<IPv4Table<Value>> list =
             new ArrayList<IPv4Table<Value>>(count);
         for (int i = 0; i < count; ++i) {
-            list.add(newTable(i, 1000000, 50));
+            list.add(newTable1(i, 1000000, 50));
         }
         return list;
     }
@@ -124,28 +120,31 @@ public class Benchmark1
         System.out.println("Benchmark1 executing:");
         System.out.println();
 
-        Watch w = new Watch("create 5 new IPv4Tables");
-        List<IPv4Table<Value>> list = newTableList(5);
-        w.stop();
+        long count1, count2;
 
         {
             System.out.print("benchmark query IPv4Table in 10 sec:");
-            long count = benchmarkQuery(list.get(0), 10000, 0);
+            IPv4Table<Value> t1 = newTable1(0, 1000000, 50);
+            long count = benchmarkQuery(t1, 10000, 0);
             System.out.println(String.format(" %1$.2f/sec (total %2$d)",
                         count / 10.0, count));
+            count1 = count;
         }
 
-        w = new Watch("convert a IPv4Table to IPv4Table2");
-        IPv4Table2<Value> t2 = new IPv4Table2<Value>(list.get(0),
-                new MessagePackableConverter<Value>(Value.class));
-        w.stop();
 
         {
             System.out.print("benchmark query IPv4Table2 in 10 sec:");
+            IPv4Table2<Value> t2 = newTable2(0, 1000000, 50);
             long count = benchmarkQuery(t2, 10000, 0);
             System.out.println(String.format(" %1$.2f/sec (total %2$d)",
                         count / 10.0, count));
+            count2 = count;
         }
+
+        System.out.println();
+        System.out.println(String.format(
+                    "Benchmark#1 ratio: %1$.2f%%",
+                    (double)count2 * 100 / count1));
     }
 
     public static void benchmark2(long seed, int count) throws Exception
