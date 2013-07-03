@@ -16,15 +16,24 @@ public class Benchmark1
 
     public static class Watch {
         private final String message;
-        private final long startTime;
+        private long startTime;
+        private long accumulateTime = 0;
         public Watch(String message) {
             this.message = message;
             this.startTime = System.nanoTime();
         }
         public void stop() {
-            long d = System.nanoTime() - this.startTime;
+            split();
             System.out.println(String.format(
-                        "[%2$12.6fs] %1$s", this.message, d * 0.000000001));
+                        "[%2$12.6fs] %1$s",
+                        this.message,
+                        this.accumulateTime * 0.000000001));
+        }
+        public void start() {
+            this.startTime = System.nanoTime();
+        }
+        public void split() {
+            this.accumulateTime += System.nanoTime() - this.startTime;
         }
     }
 
@@ -62,6 +71,10 @@ public class Benchmark1
     }
 
     public static IPv4Table<Value> newTable(long seed, int count, int size) {
+        return newTable1(seed, count, size);
+    }
+
+    public static IPv4Table<Value> newTable1(long seed, int count, int size) {
         Random r = new Random(seed);
         IPv4Table<Value> t = new IPv4Table<Value>();
         long unit = 0xFFFFFFFFL / count;
@@ -73,6 +86,13 @@ public class Benchmark1
             start += unit;
         }
         return t;
+    }
+
+    public static IPv4Table2<Value> newTable2(long seed, int count, int size)
+        throws Exception
+    {
+        return new IPv4Table2<Value>(newTable1(seed, count, size),
+                new MessagePackableConverter<Value>(Value.class));
     }
 
     public static List<IPv4Table<Value>> newTableList(int count) {
@@ -128,12 +148,37 @@ public class Benchmark1
         }
     }
 
-    public static void benchmark2() throws Exception
+    public static void benchmark2(long seed, int count) throws Exception
     {
         System.out.println("Benchmark2 executing:");
         System.out.println();
 
-        // TODO:
+        Random r1 = new Random(seed);
+        Random r2 = new Random(seed);
+
+        IPv4Table<Value> t1 = null;
+        IPv4Table2<Value> t2 = newTable2(0, 1000000, 50);
+        Watch w0 = new Watch("GC: init");
+        System.gc();
+        w0.stop();
+        Watch w1 = new Watch("GC: under holding many object");
+        Watch w2 = new Watch("GC: under holding few object");
+
+        for (int i = 0; i < count; ++i) {
+            t1 = newTable1(r1.nextLong(), 1000000, 50);
+            t2 = null;
+            w1.start();
+            System.gc();
+            w1.split();
+
+            t1 = null;
+            t2 = newTable2(r1.nextLong(), 1000000, 50);
+            w2.start();
+            System.gc();
+            w2.split();
+        }
+        w1.stop();
+        w2.stop();
     }
 
     public static void main(String[] args) throws Exception
@@ -142,7 +187,7 @@ public class Benchmark1
         if ("1".equals(name)) {
             benchmark1();
         } else if ("2".equals(name)) {
-            benchmark2();
+            benchmark2(0, 10);
         } else {
             System.out.println(String.format("Unknown task: %1$s", name));
         }
