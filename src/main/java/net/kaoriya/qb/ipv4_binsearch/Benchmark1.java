@@ -99,7 +99,7 @@ public class Benchmark1
         return count;
     }
 
-    public static void main(String[] args) throws Exception
+    public static void benchmark1() throws Exception
     {
         System.out.println("Benchmark1 executing:");
         System.out.println();
@@ -125,6 +125,26 @@ public class Benchmark1
             long count = benchmarkQuery(t2, 10000, 0);
             System.out.println(String.format(" %1$.2f/sec (total %2$d)",
                         count / 10.0, count));
+        }
+    }
+
+    public static void benchmark2() throws Exception
+    {
+        System.out.println("Benchmark2 executing:");
+        System.out.println();
+
+        // TODO:
+    }
+
+    public static void main(String[] args) throws Exception
+    {
+        String name = args[0];
+        if ("1".equals(name)) {
+            benchmark1();
+        } else if ("2".equals(name)) {
+            benchmark2();
+        } else {
+            System.out.println(String.format("Unknown task: %1$s", name));
         }
     }
 }
