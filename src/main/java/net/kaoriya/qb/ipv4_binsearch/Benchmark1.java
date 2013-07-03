@@ -20,10 +20,12 @@ public class Benchmark1
         private long accumulateTime = 0;
         public Watch(String message) {
             this.message = message;
-            this.startTime = System.nanoTime();
+            start();
         }
         public void stop() {
-            split();
+            if (this.startTime >= 0) {
+                split();
+            }
             System.out.println(String.format(
                         "[%2$12.6fs] %1$s",
                         this.message,
@@ -34,6 +36,10 @@ public class Benchmark1
         }
         public void split() {
             this.accumulateTime += System.nanoTime() - this.startTime;
+            this.startTime = -1;
+        }
+        public long getAccumulateTime() {
+            return this.accumulateTime;
         }
     }
 
@@ -144,7 +150,7 @@ public class Benchmark1
         System.out.println();
         System.out.println(String.format(
                     "Benchmark#1 ratio: %1$.2f%%",
-                    (double)count2 * 100 / count1));
+                    (double)count2 * 100.0 / count1));
     }
 
     public static void benchmark2(long seed, int count) throws Exception
@@ -178,6 +184,13 @@ public class Benchmark1
         }
         w1.stop();
         w2.stop();
+
+        long a1 = w1.getAccumulateTime();
+        long a2 = w2.getAccumulateTime();
+        System.out.println();
+        System.out.println(String.format(
+                    "Benchmark#2 ratio: %1$.2f%%",
+                    (double)a1 * 100.0 / a2));
     }
 
     public static void main(String[] args) throws Exception
