@@ -190,7 +190,7 @@ public class Benchmark1
         System.out.println();
         System.out.println(String.format(
                     "Benchmark#2 ratio: %1$.2f%%",
-                    (double)a1 * 100.0 / a2));
+                    (double)a2 * 100.0 / a1));
     }
 
     public static void main(String[] args) throws Exception

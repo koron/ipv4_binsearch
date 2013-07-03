@@ -55,3 +55,51 @@ t.add(CIDR.fromString("192.168.0.8/24"), "foo");
 // サブネット形式
 t.add(CIDR.fromString("192.168.1.0/255.255.255.0"), "foo");
 ```
+
+## ベンチマーク
+
+ベンチマークを実行するには、以下のようにします。
+
+    $ gradle benchmark
+
+以下の様な結果を得られます。
+
+```
+:benchmark1
+Benchmark1 executing:
+
+benchmark query IPv4Table in 10 sec: 1721401.60/sec (total 17214016)
+benchmark query IPv4Table2 in 10 sec: 1235430.80/sec (total 12354308)
+
+Benchmark#1 ratio: 71.77%
+:benchmark2
+Benchmark2 executing:
+
+[    0.018851s] GC: init
+[    5.844288s] GC: under holding many object
+[    0.091530s] GC: under holding few object
+
+Benchmark#2 ratio: 1.59%
+```
+
+benchmark1 は IPv4Table と IPv4Table2 に対するクエリ回数(速度)を比較するもの
+で、10秒間で何回クエリできたかを示しています。
+
+    Benchmark#1 ratio: 71.77%
+
+特に上記は、IPv4Table2 におけるクエリ回数は IPv4Table の約 72% であることを示し
+ています。
+
+benchmark2 は IPv4Table と IPv4Table2 を使用した際の GC にかかる時間を比較する
+ものです。
+
+    Benchmark#2 ratio: 1.59%
+
+特に上記は、IPv4Table2 を使っている(メモリ上に保持している)場合に GC にかかる時
+間が、IPv4Table を使っている場合に発生する GC にかかる時間が約 1.6% 程度である
+(=高速である)ことを示しています。
+
+### ベンチマーク結論
+
+IPv4Table2 を使うことで、IPv4Tableを使う場合に比べてクエリ速度はやや遅くなるも
+のの、GCにかかる時間は飛躍的に短くなることがわかります。

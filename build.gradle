@@ -14,16 +14,17 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.10+'
 }
 
-benchmarkClass = 'net.kaoriya.qb.ipv4_binsearch.Benchmark1'
-
 task benchmark1(type: JavaExec, dependsOn: [classes]) {
-    main = benchmarkClass
+    main = 'net.kaoriya.qb.ipv4_binsearch.Benchmark1'
     args = [ '1' ]
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task benchmark2(type: JavaExec, dependsOn: [classes]) {
-    main = benchmarkClass
+    main = 'net.kaoriya.qb.ipv4_binsearch.Benchmark1'
     args = [ '2' ]
     classpath = sourceSets.main.runtimeClasspath
+}
+
+task benchmark(dependsOn: [benchmark1, benchmark2]) {
 }
