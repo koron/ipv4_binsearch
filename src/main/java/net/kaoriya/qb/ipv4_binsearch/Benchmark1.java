@@ -90,11 +90,24 @@ public class Benchmark1
         return t;
     }
 
+    /**
+     * Create a IPv4Table2 (off-heap version).
+     */
     public static IPv4Table2<Value> newTable2(long seed, int count, int size)
         throws Exception
     {
         return new IPv4Table2<Value>(newTable1(seed, count, size),
-                new MessagePackableConverter<Value>(Value.class));
+                new MessagePackableConverter<Value>(Value.class), true);
+    }
+
+    /**
+     * Create a IPv4Table2 (on-heap version).
+     */
+    public static IPv4Table2<Value> newTable3(long seed, int count, int size)
+        throws Exception
+    {
+        return new IPv4Table2<Value>(newTable1(seed, count, size),
+                new MessagePackableConverter<Value>(Value.class), false);
     }
 
     public static List<IPv4Table<Value>> newTableList(int count) {
@@ -106,19 +119,45 @@ public class Benchmark1
         return list;
     }
 
-    public static long benchmarkQuery(
-            IPv4TableBase<Value> t,
-            long msec,
-            long seed)
-    {
-        Random r = new Random(seed);
-        long count = 0;
-        long end = System.currentTimeMillis() + msec;
-        while (System.currentTimeMillis() < end) {
-            Value v = t.find(r.nextInt());
-            ++count;
+    static abstract class Bench1 {
+        String label;
+        long count;
+
+        Bench1(String label) {
+            this.label = label;
         }
-        return count;
+
+        Bench1 run() throws Exception {
+            System.out.format("benchmark query %1$s in 10 sec:", this.label);
+            IPv4TableBase<Value> t = newTable();
+            System.gc();
+            long count = query(t, 10000, 0);
+            System.out.println(String.format(" %1$.2f/sec (total %2$d)",
+                        count / 10.0, count));
+            this.count = count;
+            return this;
+        }
+
+        static long query(
+                IPv4TableBase<Value> t,
+                long msec,
+                long seed)
+        {
+            Random r = new Random(seed);
+            long count = 0;
+            long end = System.currentTimeMillis() + msec;
+            while (System.currentTimeMillis() < end) {
+                Value v = t.find(r.nextInt());
+                ++count;
+            }
+            return count;
+        }
+
+        long getCount() {
+            return this.count;
+        }
+
+        abstract IPv4TableBase<Value> newTable() throws Exception;
     }
 
     public static void benchmark1() throws Exception
@@ -126,31 +165,37 @@ public class Benchmark1
         System.out.println("Benchmark1 executing:");
         System.out.println();
 
-        long count1, count2;
+        long count1, count2, count3;
 
-        {
-            System.out.print("benchmark query IPv4Table in 10 sec:");
-            IPv4Table<Value> t1 = newTable1(0, 1000000, 50);
-            long count = benchmarkQuery(t1, 10000, 0);
-            System.out.println(String.format(" %1$.2f/sec (total %2$d)",
-                        count / 10.0, count));
-            count1 = count;
-        }
+        Bench1 b1 = new Bench1("IPv4Table") {
+            IPv4TableBase<Value> newTable() throws Exception {
+                return newTable1(0, 1000000, 50);
+            }
+        }.run();
 
+        Bench1 b2 = new Bench1("IPv4Table2 (off-heap)") {
+            IPv4TableBase<Value> newTable() throws Exception {
+                return newTable2(0, 1000000, 50);
+            }
+        }.run();
 
-        {
-            System.out.print("benchmark query IPv4Table2 in 10 sec:");
-            IPv4Table2<Value> t2 = newTable2(0, 1000000, 50);
-            long count = benchmarkQuery(t2, 10000, 0);
-            System.out.println(String.format(" %1$.2f/sec (total %2$d)",
-                        count / 10.0, count));
-            count2 = count;
-        }
+        Bench1 b3 = new Bench1("IPv4Table2 (heap)") {
+            IPv4TableBase<Value> newTable() throws Exception {
+                return newTable3(0, 1000000, 50);
+            }
+        }.run();
 
         System.out.println();
+        System.out.println("Benchmark#1 results:");
         System.out.println(String.format(
-                    "Benchmark#1 ratio: %1$.2f%%",
-                    (double)count2 * 100.0 / count1));
+                    "    off-heap/objects ratio: %1$7.2f%%",
+                    (double)b2.getCount() * 100.0 / b1.getCount()));
+        System.out.println(String.format(
+                    "    heap/objects ratio:     %1$7.2f%%",
+                    (double)b3.getCount() * 100.0 / b1.getCount()));
+        System.out.println(String.format(
+                    "    heap/off-heap ratio:    %1$7.2f%%",
+                    (double)b3.getCount() * 100.0 / b2.getCount()));
     }
 
     public static void benchmark2(long seed, int count) throws Exception
@@ -199,7 +244,7 @@ public class Benchmark1
 
         abstract IPv4TableBase<Value> newTable(long seed) throws Exception;
 
-        void run(long seed, int count) throws Exception {
+        Bench3 run(long seed, int count) throws Exception {
             Random r = new Random(seed);
 
             IPv4TableBase<Value> t = newTable(0);
@@ -223,6 +268,7 @@ public class Benchmark1
             this.gcTime = w2.getAccumulateTime();
             System.out.println(String.format("Total: %1$.2f",
                         getTotal() * 0.000000001));
+            return this;
         }
 
         long getTotal() {
@@ -240,21 +286,33 @@ public class Benchmark1
             IPv4TableBase<Value> newTable(long seed) throws Exception {
                 return newTable1(seed, 1000000, 50);
             }
-        };
-        b1.run(seed, count);
+        }.run(seed, count);
 
-        System.out.println("Few objects");
+        System.out.println("Few objects (off-heap)");
         Bench3 b2 = new Bench3() {
             IPv4TableBase<Value> newTable(long seed) throws Exception {
                 return newTable2(seed, 1000000, 50);
             }
-        };
-        b2.run(seed, count);
+        }.run(seed, count);
+
+        System.out.println("Few objects (heap)");
+        Bench3 b3 = new Bench3() {
+            IPv4TableBase<Value> newTable(long seed) throws Exception {
+                return newTable3(seed, 1000000, 50);
+            }
+        }.run(seed, count);
 
         System.out.println();
+        System.out.println("Benchmark#3 results:");
         System.out.println(String.format(
-                    "Benchmark#3 ratio: %1$.2f%%",
+                    "    off-heap/objects ratio: %1$7.2f%%",
                     (double)b2.getTotal() * 100.0 / b1.getTotal()));
+        System.out.println(String.format(
+                    "    heap/objects ratio:     %1$7.2f%%",
+                    (double)b3.getTotal() * 100.0 / b1.getTotal()));
+        System.out.println(String.format(
+                    "    heap/off-heap ratio:    %1$7.2f%%",
+                    (double)b3.getTotal() * 100.0 / b2.getTotal()));
     }
 
     public static void main(String[] args) throws Exception

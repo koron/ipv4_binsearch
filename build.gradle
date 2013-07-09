@@ -32,5 +32,5 @@ task benchmark3(type: JavaExec, dependsOn: [classes]) {
     classpath = sourceSets.main.runtimeClasspath
 }
 
-task benchmark(dependsOn: [benchmark1, benchmark2, benchmark3]) {
+task benchmark(dependsOn: [benchmark1, benchmark3]) {
 }
