@@ -103,3 +103,23 @@ benchmark2 は IPv4Table と IPv4Table2 を使用した際の GC にかかる時
 
 IPv4Table2 を使うことで、IPv4Tableを使う場合に比べてクエリ速度はやや遅くなるも
 のの、GCにかかる時間は飛躍的に短くなることがわかります。
+
+## ベンチマーク#3
+
+```
+$ gradle benchmark3
+
+Benchmark3 executing:
+
+Many objects
+[    0.639730s] GC: init
+[    9.137303s] Generate table
+[    5.605132s] GC: after generating
+Total: 14.74
+
+Few objects
+[    0.009025s] GC: init
+[   12.208847s] Generate table
+[    0.076361s] GC: after generating
+Total: 12.29
+```

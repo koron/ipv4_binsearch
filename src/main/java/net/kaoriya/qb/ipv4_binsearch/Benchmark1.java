@@ -193,6 +193,62 @@ public class Benchmark1
                     (double)a2 * 100.0 / a1));
     }
 
+    static abstract class Bench3 {
+        long generateTime;
+        long gcTime;
+
+        abstract IPv4TableBase<Value> newTable(long seed) throws Exception;
+
+        void run(long seed, int count) throws Exception {
+            Random r = new Random(seed);
+
+            IPv4TableBase<Value> t = newTable(0);
+            Watch w0 = new Watch("GC: init");
+            System.gc();
+            w0.stop();
+            Watch w1 = new Watch("Generate table");
+            Watch w2 = new Watch("GC: after generating");
+            for (int i = 0; i < count; ++i) {
+                w1.start();
+                t = newTable(r.nextLong());
+                w1.split();
+                w2.start();
+                System.gc();
+                w2.split();
+            }
+            w1.stop();
+            w2.stop();
+
+            this.generateTime = w1.getAccumulateTime();
+            this.gcTime = w2.getAccumulateTime();
+            System.out.println(String.format("Total: %1$.2f",
+                        (this.generateTime + this.gcTime) * 0.000000001));
+        }
+    }
+
+    public static void benchmark3(long seed, int count) throws Exception
+    {
+        System.out.println("Benchmark3 executing:");
+
+        System.out.println();
+        System.out.println("Many objects");
+        Bench3 b1 = new Bench3() {
+            IPv4TableBase<Value> newTable(long seed) throws Exception {
+                return newTable1(seed, 1000000, 50);
+            }
+        };
+        b1.run(seed, count);
+
+        System.out.println();
+        System.out.println("Few objects");
+        Bench3 b2 = new Bench3() {
+            IPv4TableBase<Value> newTable(long seed) throws Exception {
+                return newTable2(seed, 1000000, 50);
+            }
+        };
+        b2.run(seed, count);
+    }
+
     public static void main(String[] args) throws Exception
     {
         String name = args[0];
@@ -200,6 +256,8 @@ public class Benchmark1
             benchmark1();
         } else if ("2".equals(name)) {
             benchmark2(0, 10);
+        } else if ("3".equals(name)) {
+            benchmark3(0, 10);
         } else {
             System.out.println(String.format("Unknown task: %1$s", name));
         }

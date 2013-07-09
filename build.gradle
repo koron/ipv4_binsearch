@@ -26,5 +26,11 @@ task benchmark2(type: JavaExec, dependsOn: [classes]) {
     classpath = sourceSets.main.runtimeClasspath
 }
 
+task benchmark3(type: JavaExec, dependsOn: [classes]) {
+    main = 'net.kaoriya.qb.ipv4_binsearch.Benchmark1'
+    args = [ '3' ]
+    classpath = sourceSets.main.runtimeClasspath
+}
+
 task benchmark(dependsOn: [benchmark1, benchmark2]) {
 }
