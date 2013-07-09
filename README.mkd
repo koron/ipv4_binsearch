@@ -56,6 +56,8 @@ t.add(CIDR.fromString("192.168.0.8/24"), "foo");
 t.add(CIDR.fromString("192.168.1.0/255.255.255.0"), "foo");
 ```
 
+---
+
 ## ベンチマーク
 
 ### 実行と結果
@@ -70,61 +72,80 @@ t.add(CIDR.fromString("192.168.1.0/255.255.255.0"), "foo");
 :benchmark1
 Benchmark1 executing:
 
-benchmark query IPv4Table in 10 sec: 1721401.60/sec (total 17214016)
-benchmark query IPv4Table2 in 10 sec: 1235430.80/sec (total 12354308)
+benchmark query IPv4Table in 10 sec: 1685574.80/sec (total 16855748)
+benchmark query IPv4Table2 (off-heap) in 10 sec: 1245846.40/sec (total 12458464)
+benchmark query IPv4Table2 (heap) in 10 sec: 1147486.20/sec (total 11474862)
 
-Benchmark#1 ratio: 71.77%
-:benchmark2
-Benchmark2 executing:
+Benchmark#1 results:
+    off-heap/objects ratio:   73.91%
+    heap/objects ratio:       68.08%
+    heap/off-heap ratio:      92.10%
+```
 
-[    0.018851s] GC: init
-[    5.844288s] GC: under holding many object
-[    0.091530s] GC: under holding few object
+```
+:benchmark3
+Benchmark3 executing:
 
-Benchmark#2 ratio: 1.59%
+Many objects
+[    0.651304s] GC: init
+[    9.096094s] Generate table
+[    5.610543s] GC: after generating
+Total: 14.71
+Few objects (off-heap)
+[    0.010873s] GC: init
+[   12.673108s] Generate table
+[    0.078269s] GC: after generating
+Total: 12.75
+Few objects (heap)
+[    0.223094s] GC: init
+[   11.429514s] Generate table
+[    2.187207s] GC: after generating
+Total: 13.62
+
+Benchmark#3 results:
+    off-heap/objects ratio:   86.70%
+    heap/objects ratio:       92.59%
+    heap/off-heap ratio:     106.79%
 ```
 
 ### 考察
 
-benchmark1 は IPv4Table と IPv4Table2 に対するクエリ回数(速度)を比較するもの
-で、10秒間で何回クエリできたかを示しています。
+benchmark1 は IPv4Table と IPv4Table2 (off-heap/heap) に対するクエリ回数(速度)
+を比較するもので、10秒間で何回クエリできたかを示しています。
 
-    Benchmark#1 ratio: 71.77%
+```
+Benchmark#1 results:
+    off-heap/objects ratio:   73.91%
+    heap/objects ratio:       68.08%
+    heap/off-heap ratio:      92.10%
+```
 
-特に上記は、IPv4Table2 におけるクエリ回数は IPv4Table の約 72% であることを示し
-ています。
+特に上記は、IPv4Table2 (off-heap) におけるクエリ回数は IPv4Table の約 73% であ
+ること、また IPv4Table2 (heap) へのクエリ回数は IPv4Table2 (heap) の約 92% であ
+ることを示しています。
 
-benchmark2 は IPv4Table と IPv4Table2 を使用した際の GC にかかる時間を比較する
-ものです。
+benchmark3 は IPv4Table と IPv4Table2 (off-heap/heap) の再作成にかかる時間を、
+GCを含めて計測比較したものです。
 
-    Benchmark#2 ratio: 1.59%
+```
+Benchmark#3 results:
+    off-heap/objects ratio:   86.70%
+    heap/objects ratio:       92.59%
+    heap/off-heap ratio:     106.79%
+```
 
-特に上記は、IPv4Table2 を使っている(メモリ上に保持している)場合に GC にかかる時
-間が、IPv4Table を使っている場合に発生する GC にかかる時間の約 1.6% である
-(=高速である)ことを示しています。
+特に上記は、IPv4Table2 (off-heap) を使っている(メモリ上に保持している)場合に、
+テーブルの再作成にかかる時間が IPv4Table を使っている場合の約 87% であることを
+示しています。
+
+off-heap と heap を比べると、主にGCにかかる時間のためにoff-heapの方が速くなりま
+す。
 
 ### 結論
 
 IPv4Table2 を使うことで、IPv4Tableを使う場合に比べてクエリ速度はやや遅くなるも
 のの、GCにかかる時間は飛躍的に短くなることがわかります。
 
-## ベンチマーク#3
-
-```
-$ gradle benchmark3
-
-Benchmark3 executing:
-
-Many objects
-[    0.655263s] GC: init
-[    9.331268s] Generate table
-[    5.676477s] GC: after generating
-Total: 15.01
-Few objects
-[    0.009102s] GC: init
-[   12.720331s] Generate table
-[    0.078436s] GC: after generating
-Total: 12.80
-
-Benchmark#3 ratio: 85.28%
-```
+また IPv4Table2 (off-heap) のほうが IPv4Table2 (heap) よりも主にGCが理由で速い
+ことから、ヒープ上に持つオブジェクトのサイズが小さいことがGCの速度に対して有利
+に働いていると推測できます。
