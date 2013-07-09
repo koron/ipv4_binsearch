@@ -112,14 +112,15 @@ $ gradle benchmark3
 Benchmark3 executing:
 
 Many objects
-[    0.639730s] GC: init
-[    9.137303s] Generate table
-[    5.605132s] GC: after generating
-Total: 14.74
-
+[    0.655263s] GC: init
+[    9.331268s] Generate table
+[    5.676477s] GC: after generating
+Total: 15.01
 Few objects
-[    0.009025s] GC: init
-[   12.208847s] Generate table
-[    0.076361s] GC: after generating
-Total: 12.29
+[    0.009102s] GC: init
+[   12.720331s] Generate table
+[    0.078436s] GC: after generating
+Total: 12.80
+
+Benchmark#3 ratio: 85.28%
 ```

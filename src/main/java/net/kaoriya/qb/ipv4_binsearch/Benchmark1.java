@@ -222,15 +222,19 @@ public class Benchmark1
             this.generateTime = w1.getAccumulateTime();
             this.gcTime = w2.getAccumulateTime();
             System.out.println(String.format("Total: %1$.2f",
-                        (this.generateTime + this.gcTime) * 0.000000001));
+                        getTotal() * 0.000000001));
+        }
+
+        long getTotal() {
+            return this.generateTime + this.gcTime;
         }
     }
 
     public static void benchmark3(long seed, int count) throws Exception
     {
         System.out.println("Benchmark3 executing:");
-
         System.out.println();
+
         System.out.println("Many objects");
         Bench3 b1 = new Bench3() {
             IPv4TableBase<Value> newTable(long seed) throws Exception {
@@ -239,7 +243,6 @@ public class Benchmark1
         };
         b1.run(seed, count);
 
-        System.out.println();
         System.out.println("Few objects");
         Bench3 b2 = new Bench3() {
             IPv4TableBase<Value> newTable(long seed) throws Exception {
@@ -247,6 +250,11 @@ public class Benchmark1
             }
         };
         b2.run(seed, count);
+
+        System.out.println();
+        System.out.println(String.format(
+                    "Benchmark#3 ratio: %1$.2f%%",
+                    (double)b2.getTotal() * 100.0 / b1.getTotal()));
     }
 
     public static void main(String[] args) throws Exception
