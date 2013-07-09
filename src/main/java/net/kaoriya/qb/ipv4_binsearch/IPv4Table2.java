@@ -6,6 +6,7 @@ import java.io.IOException;
 import net.kaoriya.qb.serialized_array.Converter;
 import net.kaoriya.qb.serialized_array.HeapArray;
 import net.kaoriya.qb.serialized_array.OffHeapArray;
+import net.kaoriya.qb.serialized_array.SerializedArray;
 
 /**
  * Less objects version of IPv4Table.
@@ -15,11 +16,12 @@ public final class IPv4Table2<T> extends IPv4TableBase<T>
 {
     private final IntRangeIndexArray indexArray;
 
-    private final OffHeapArray<T> dataArray;
+    private final SerializedArray<T> dataArray;
 
     public IPv4Table2(
             IPv4Table<T> src,
-            Converter<T> converter)
+            Converter<T> converter,
+            boolean useOffHeap)
         throws Exception
     {
         this.indexArray = new IntRangeIndexArray(src.rangeTable);
@@ -29,7 +31,19 @@ public final class IPv4Table2<T> extends IPv4TableBase<T>
             heapArray.add(src.rangeTable.getData(i));
         }
 
-        this.dataArray = new OffHeapArray(heapArray);
+        if (useOffHeap) {
+            this.dataArray = new OffHeapArray(heapArray);
+        } else {
+            this.dataArray = heapArray;
+        }
+    }
+
+    public IPv4Table2(
+            IPv4Table<T> src,
+            Converter<T> converter)
+        throws Exception
+    {
+        this(src, converter, true);
     }
 
     public void add(int start, int end, T data) {

@@ -107,6 +107,27 @@ public class IPv4Table2Test
 
         IPv4Table2 t = new IPv4Table2(t1, new SerializableConverter<String>());
 
+        assertEquals("foo", t.find(IPv4.fromString("192.168.0.0")));
+        assertEquals("foo", t.find(IPv4.fromString("192.168.0.1")));
+        assertEquals("foo", t.find(IPv4.fromString("192.168.0.2")));
+        assertEquals("foo", t.find(IPv4.fromString("192.168.1.0")));
+        assertEquals("foo", t.find(IPv4.fromString("192.168.2.0")));
+        assertEquals("foo", t.find(IPv4.fromString("192.168.255.255")));
+
+        assertNull(t.find(IPv4.fromString("0.0.0.0")));
+        assertNull(t.find(IPv4.fromString("255.255.255.255")));
+        assertNull(t.find(IPv4.fromString("192.167.255.255")));
+        assertNull(t.find(IPv4.fromString("192.169.0.0")));
+    }
+
+    @Test
+    public void findByCIDR1withHeap() throws Exception
+    {
+        IPv4Table<String> t1 = new IPv4Table<String>();
+        t1.add(CIDR.fromString("192.168.0.0/16"), "foo");
+
+        IPv4Table2 t = new IPv4Table2(t1, new SerializableConverter<String>(),
+                false);
 
         assertEquals("foo", t.find(IPv4.fromString("192.168.0.0")));
         assertEquals("foo", t.find(IPv4.fromString("192.168.0.1")));
