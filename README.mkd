@@ -85,16 +85,16 @@ IPv4Table2 を作成する時には IPv4Table の他に Converter が必要で�
 
 種類                     | 説明
 -------------------------|------
-SerializableConverter    | java.io.Serializable を実装したクラスを変換できる Converter。速度やメモリ効率はあまり良くない。
-MessagePackableConverter | org.msgpack.MessagePackable を実装したクラスを変換できる Converter。
+SerializableConverter    | java.io.Serializable を実装したクラスを変換できる Converter。比較的手軽に利用できるが、速度やメモリ効率はあまり良くない。
+MessagePackableConverter | org.msgpack.MessagePackable を実装したクラスを変換できる Converter。実装の手間はあるが、速度やメモリ効率は比較的良くできる。
 
 上述の例は SerializableConverter を用いたものでした。
 以下には MessagePackableConverter を用いた実装例を示します。
 
 ```java
-public static class Value implements MessagePackable {
+public class Value implements MessagePackable {
     private String stringProperty;
-    public Value() { } // 引数なしコンストラクタが必須です
+    public Value() { } // 引数なしコンストラクタが必須
     public Value(String stringValue) {
         this.stringProperty = stringValue;
     }
@@ -115,7 +115,7 @@ public static class Value implements MessagePackable {
     }
 }
 
-// ...
+// 中略
 
 IPv4Table<Value> t = new IPv4Table();
 // TODO: IPv4Table t の構築
