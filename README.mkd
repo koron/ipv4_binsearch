@@ -56,6 +56,74 @@ t.add(CIDR.fromString("192.168.0.8/24"), "foo");
 t.add(CIDR.fromString("192.168.1.0/255.255.255.0"), "foo");
 ```
 
+### IPv4Table2 (off-heap 版)の使い方
+
+IPv4Table2 (off-heap 版) は以下の点を除き IPv4Table と同じように使えます。
+
+*   IPv4Table2 作成後の要素追加 (add) はできない
+    *   必要に応じて off-heap メモリの破棄 (close) はできる
+*   構築済みの IPv4Table から変換して作成する
+
+つまり一旦 IPv4Table を作成・各要素を追加・構築してから、
+それを元に IPv4Table2 を作成してください。
+また一度作成したIPv4Table2 は変更できません。
+add() メソッドの呼び出しは UnsupportedOperationException で失敗します。
+
+IPv4Table2 の作成例:
+
+```java
+IPv4Table<String> t = new IPv4Table();
+// TODO: IPv4Table t の構築
+
+IPv4Table2<String> t2 = new IPv4Table2(t,
+        new SerializableConverter<String>());
+```
+
+IPv4Table2 を作成する時には IPv4Table の他に Converter が必要です。
+独自の Converter を実装することもできますが、
+予め以下の2種類の Converter が実装されています。
+
+種類                     | 説明
+-------------------------|------
+SerializableConverter    | java.io.Serializable を実装したクラスを変換できる Converter。速度やメモリ効率はあまり良くない。
+MessagePackableConverter | org.msgpack.MessagePackable を実装したクラスを変換できる Converter。
+
+上述の例は SerializableConverter を用いたものでした。
+以下には MessagePackableConverter を用いた実装例を示します。
+
+```java
+public static class Value implements MessagePackable {
+    private String stringProperty;
+    public Value() { } // 引数なしコンストラクタが必須です
+    public Value(String stringValue) {
+        this.stringProperty = stringValue;
+    }
+    public String getStringProperty() {
+        return this.stringProperty;
+    }
+    public void setStringProperty(String value) {
+        this.stringProperty = value;
+    }
+
+    // MessagePackable インターフェースの実装
+
+    public void readFrom(Unpacker unpacker) throws IOException {
+        this.stringProperty = unpacker.readString();
+    }
+    public void writeTo(Packer packer) throws IOException {
+        packer.write(this.stringProperty);
+    }
+}
+
+// ...
+
+IPv4Table<Value> t = new IPv4Table();
+// TODO: IPv4Table t の構築
+
+IPv4Table2<Value> t2 = new IPv4Table2(t,
+        new MessagePackableConverter<Value>(Value.class));
+```
+
 ---
 
 ## ベンチマーク
